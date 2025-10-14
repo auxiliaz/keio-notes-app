@@ -1,14 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 import {
   NotebookPen, Search, Plus, MoreHorizontal, Settings, CheckSquare,
   Briefcase, BookOpen, PenLine, X, Calendar, ChevronLeft,
-  ChevronRight, Menu, Save, Upload, LogOut
+  ChevronRight, Menu, Save, Upload, LogOut, Trash2
 } from 'lucide-react';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [user, setUser] = useState<{ name: string } | null>(null);
+
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedNote, setSelectedNote] = useState<any | null>(null);
@@ -109,6 +113,18 @@ export default function DashboardPage() {
     setImages(images.filter((img) => img.id !== imageId));
   };
 
+  const handleDeleteNote = (id: number) => {
+    const confirmDelete = window.confirm('Delete this note? This action cannot be undone.');
+    if (!confirmDelete) return;
+    const updated = notes.filter((n) => n.id !== id);
+    saveNotes(updated);
+    if (selectedNote?.id === id) {
+      setIsDetailOpen(false);
+      setSelectedNote(null);
+      setIsListVisible(true);
+    }
+  };
+
   const handleSaveNewNote = () => {
     const newNote = {
       id: Date.now(),
@@ -126,7 +142,7 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    alert('Logged out (frontend only)');
+    router.push('/register');
   };
 
   const folders = [
@@ -156,29 +172,32 @@ export default function DashboardPage() {
   return (
     <div className="flex h-screen bg-[#FFFAF2] overflow-hidden">
       {/* Sidebar */}
-      <div className={`${isSidebarOpen ? 'w-64' : 'w-0'} bg-white border-r border-gray-200 flex flex-col transition-all`}>
-        <div className="p-4 border-b border-gray-200">
+      <div className={`${isSidebarOpen ? 'w-64' : 'w-0'} bg-white shadow-lg flex flex-col overflow-hidden transition-[width] duration-500 ease-in-out`}>
+        <div className="p-4 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#CD5C5C] flex items-center justify-center text-white font-semibold">
               {user?.name?.substring(0, 2).toUpperCase() || 'U'}
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-gray-800">{user?.name || 'User'}</p>
-            </div>
+            {isSidebarOpen && (
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-gray-800">{user?.name || 'User'}</p>
+              </div>
+            )}
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="ml-auto p-2 hover:bg-gray-100 rounded-lg"
+              aria-label="Toggle sidebar"
+            >
+              {isSidebarOpen ? (
+                <ChevronLeft className="w-4 h-4 text-gray-600" />
+              ) : (
+                <ChevronRight className="w-4 h-4 text-gray-600" />
+              )}
+            </button>
           </div>
         </div>
 
-        <div className="px-4 mb-4">
-          <button
-            onClick={openCreateNote}
-            className="w-full flex items-center justify-center gap-2 py-2 bg-[#CD5C5C] hover:bg-[#CD5C5C]/80 text-white text-sm rounded-lg"
-          >
-            <Plus className="w-4 h-4" />
-            Add new note
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-4">
+        <div className="flex-1 overflow-y-auto px-2 lg:px-4 py-2">
           {folders.map((folder) => (
             <button
               key={folder.id}
@@ -191,49 +210,72 @@ export default function DashboardPage() {
               <folder.icon
                 className={`w-4 h-4 ${folder.active ? 'text-[#CD5C5C]' : 'text-gray-500'}`}
               />
-              <span className="text-sm">{folder.name}</span>
+              {isSidebarOpen && <span className="text-sm">{folder.name}</span>}
             </button>
           ))}
         </div>
 
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-gray-100">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 mt-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
+            className={`w-full flex items-center gap-3 px-3 py-2 mt-2 text-red-600 hover:bg-red-50 rounded-lg transition-all ${
+              isSidebarOpen ? '' : 'justify-center'
+            }`}
           >
             <LogOut className="w-4 h-4" />
-            <span className="text-sm">Logout</span>
+            {isSidebarOpen && <span className="text-sm">Logout</span>}
           </button>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-gray-100 rounded-lg">
-            <Menu className="w-5 h-5 text-gray-600" />
-          </button>
-          <h2 className="text-sm font-semibold text-gray-700 flex-1">
-            {isCreateNoteOpen ? 'Create New Note' : isDetailOpen ? 'Note Detail' : 'Dashboard'}
-          </h2>
-        </div>
         
         {/* When NOT in detail/create mode, show card grid */}
         {!(isDetailOpen || isCreateNoteOpen) ? (
           <div className="flex-1 bg-white overflow-y-auto p-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">My Notes</h1>
-            <p className="text-sm text-gray-500 mb-6">{notes.length} notes</p>
+            <div className="flex items-start sm:items-center justify-between gap-3 mb-6">
+              <div>
+                <div className="flex items-center gap-2">
+                  {!isSidebarOpen && (
+                    <button
+                      onClick={() => setIsSidebarOpen(true)}
+                      className="p-2 -ml-2 rounded-md hover:bg-gray-100"
+                      aria-label="Open sidebar"
+                    >
+                      <Menu className="w-5 h-5 text-gray-700" />
+                    </button>
+                  )}
+                  <h1 className="text-2xl font-bold text-gray-900">My Notes</h1>
+                </div>
+                <p className="text-sm text-gray-500">{notes.length} notes</p>
+              </div>
+              <button
+                onClick={openCreateNote}
+                className="inline-flex items-center gap-2 px-3 py-2 bg-[#CD5C5C] hover:bg-[#CD5C5C]/80 text-white text-sm rounded-lg"
+              >
+                <Plus className="w-4 h-4" />
+                Add new note
+              </button>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {notes.map((note) => (
                 <div
                   key={note.id}
                   onClick={() => handleNoteClick(note)}
-                  className="bg-white rounded-xl border border-gray-200 p-5 cursor-pointer transition-all hover:border-[#CD5C5C] hover:bg-[#CD5C5C]/5"
+                  className="relative bg-white rounded-xl border border-gray-200 p-5 cursor-pointer transition-all hover:border-[#CD5C5C] hover:bg-[#CD5C5C]/5"
                 >
                   <div className="flex items-center justify-between mb-3 text-xs text-gray-400">
                     <span>{formatDate(note.created_at)}</span>
                   </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDeleteNote(note.id); }}
+                    className="absolute top-3 right-3 p-1.5 rounded-md text-red-600 hover:bg-red-50"
+                    aria-label="Delete note"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                   {note.images?.length > 0 && (
                     <div className="mb-3 grid grid-cols-3 gap-1">
                       {note.images.slice(0, 3).map((img: any, idx: number) => (
@@ -288,15 +330,6 @@ export default function DashboardPage() {
                 </button>
               </div>
               <div className="p-2 overflow-y-auto h-[calc(100%-56px)]">
-                <button
-                  onClick={openCreateNote}
-                  className={`w-full mb-3 flex items-center justify-center gap-2 py-2 bg-[#CD5C5C] hover:bg-[#CD5C5C]/80 text-white text-sm rounded-lg transition-all duration-300 ${
-                    isListEntering ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
-                  }`}
-                >
-                  <Plus className="w-4 h-4" />
-                  Add new note
-                </button>
                 <div className="space-y-2">
                   {notes.map((note, idx) => {
                     const isActive = selectedNote?.id === note.id && isDetailOpen;
@@ -439,13 +472,22 @@ export default function DashboardPage() {
                           )}
                         </button>
                       </div>
-                      <button
-                        onClick={handleCloseDetail}
-                        className="p-2 hover:bg-gray-100 rounded-lg"
-                        aria-label="Close detail and return to cards"
-                      >
-                        <X className="w-4 h-4 text-gray-600" />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleDeleteNote(selectedNote.id)}
+                          className="p-2 hover:bg-red-50 rounded-lg text-red-600"
+                          aria-label="Delete note"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={handleCloseDetail}
+                          className="p-2 hover:bg-gray-100 rounded-lg"
+                          aria-label="Close detail and return to cards"
+                        >
+                          <X className="w-4 h-4 text-gray-600" />
+                        </button>
+                      </div>
                     </div>
                     <h1 className="text-3xl font-bold mb-3">{selectedNote.title}</h1>
                     <p className="text-sm text-gray-400 mb-2">{formatDate(selectedNote.created_at)}</p>

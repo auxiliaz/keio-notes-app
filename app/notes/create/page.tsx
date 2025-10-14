@@ -47,7 +47,7 @@ export default function CreateNotePage() {
     setImages(images.filter((img) => img.id !== imageId));
   };
 
-  // === Save to LocalStorage ===
+
   const handleSave = () => {
     const newNote = {
       id: Math.random().toString(36).substr(2, 9),
