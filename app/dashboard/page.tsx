@@ -46,7 +46,6 @@ export default function DashboardPage() {
 
   const handleNoteClick = (note: any) => {
     setSelectedNote(note);
-    // Prepare enter animation for the detail pane
     setIsPaneEntering(true);
     setIsListEntering(true);
     setIsDetailOpen(true);
@@ -62,13 +61,19 @@ export default function DashboardPage() {
   };
 
   const openCreateNote = () => {
+    setIsDetailOpen(false);
+    setSelectedNote(null);
+    setIsCreateNoteOpen(true);
+    setIsListVisible(true);
     setIsPaneEntering(true);
     setIsListEntering(true);
-    setIsCreateNoteOpen(true);
-    setIsDetailOpen(false);
-    setIsListVisible(true);
-    setTimeout(() => setIsPaneEntering(false), 300);
-    setTimeout(() => setIsListEntering(false), 300);
+    // Trigger animation end
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        setIsPaneEntering(false);
+        setIsListEntering(false);
+      }, 100);
+    });
   };
 
   const closeCreateNote = () => {
@@ -148,9 +153,7 @@ export default function DashboardPage() {
   const folders = [
     { id: 1, name: 'My Notes', icon: NotebookPen, active: true },
     { id: 2, name: 'To-do list', icon: CheckSquare, active: false },
-    { id: 3, name: 'Projects', icon: Briefcase, active: false },
-    { id: 4, name: 'Journal', icon: PenLine, active: false },
-    { id: 5, name: 'Reading List', icon: BookOpen, active: false },
+    { id: 3, name: 'Diary', icon: PenLine, active: false },
   ];
 
   const formatDate = (dateString: string) => {
@@ -172,66 +175,80 @@ export default function DashboardPage() {
   return (
     <div className="flex h-screen bg-[#FFFAF2] overflow-hidden">
       {/* Sidebar */}
-      <div className={`${isSidebarOpen ? 'w-64' : 'w-0'} bg-white shadow-lg flex flex-col overflow-hidden transition-[width] duration-500 ease-in-out`}>
-        <div className="p-4 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#CD5C5C] flex items-center justify-center text-white font-semibold">
-              {user?.name?.substring(0, 2).toUpperCase() || 'U'}
+      <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-[#CD5C5C] flex flex-col overflow-hidden transition-[width] duration-300 ease-in-out`}>
+        {/* Logo/Brand */}
+        <div className="p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#CD5C5C]">
+                <span className="text-2xl font-bold">𔓘</span>
+              </div>
+              {isSidebarOpen && (
+                <div className="flex-1">
+                  <h2 className="text-lg font-bold text-white">Keio Notes</h2>
+                </div>
+              )}
             </div>
             {isSidebarOpen && (
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-gray-800">{user?.name || 'User'}</p>
-              </div>
+              <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="p-1.5 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                aria-label="Toggle sidebar"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
             )}
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="ml-auto p-2 hover:bg-gray-100 rounded-lg"
-              aria-label="Toggle sidebar"
-            >
-              {isSidebarOpen ? (
-                <ChevronLeft className="w-4 h-4 text-gray-600" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-gray-600" />
-              )}
-            </button>
           </div>
+          {!isSidebarOpen && (
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="w-full mt-3 p-1.5 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+              aria-label="Open sidebar"
+            >
+              <ChevronRight className="w-4 h-4 mx-auto" />
+            </button>
+          )}
         </div>
 
-        <div className="flex-1 overflow-y-auto px-2 lg:px-4 py-2">
+        {/* Navigation Menu */}
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           {folders.map((folder) => (
             <button
               key={folder.id}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+              className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${
                 folder.active
-                  ? 'bg-[#CD5C5C]/10 text-[#CD5C5C] font-semibold'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
+                  ? 'bg-white text-[#CD5C5C] font-semibold shadow-md'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              } ${!isSidebarOpen ? 'justify-center' : ''}`}
             >
-              <folder.icon
-                className={`w-4 h-4 ${folder.active ? 'text-[#CD5C5C]' : 'text-gray-500'}`}
-              />
-              {isSidebarOpen && <span className="text-sm">{folder.name}</span>}
+              <folder.icon className="w-5 h-5 flex-shrink-0" />
+              {isSidebarOpen && <span className="text-sm font-medium">{folder.name}</span>}
             </button>
           ))}
         </div>
 
-        <div className="p-4 border-t border-gray-100">
+        {/* Bottom Section */}
+        <div className="p-3 space-y-1 border-t border-white/20">
           <button
-            onClick={handleLogout}
-            className={`w-full flex items-center gap-3 px-3 py-2 mt-2 text-red-600 hover:bg-red-50 rounded-lg transition-all ${
-              isSidebarOpen ? '' : 'justify-center'
+            className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-white/80 hover:bg-white/10 hover:text-white transition-all ${
+              !isSidebarOpen ? 'justify-center' : ''
             }`}
           >
-            <LogOut className="w-4 h-4" />
-            {isSidebarOpen && <span className="text-sm">Logout</span>}
+            <Settings className="w-5 h-5 flex-shrink-0" />
+            {isSidebarOpen && <span className="text-sm font-medium">Settings</span>}
+          </button>
+          <button
+            onClick={handleLogout}
+            className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-white/80 hover:bg-white/20 hover:text-white transition-all ${
+              !isSidebarOpen ? 'justify-center' : ''
+            }`}
+          >
+            <LogOut className="w-5 h-5 flex-shrink-0" />
+            {isSidebarOpen && <span className="text-sm font-medium">Log Out</span>}
           </button>
         </div>
       </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        
-        {/* When NOT in detail/create mode, show card grid */}
+      <div className="flex-1 flex flex-col overflow-hidden">  
         {!(isDetailOpen || isCreateNoteOpen) ? (
           <div className="flex-1 bg-white overflow-y-auto p-6">
             <div className="flex items-start sm:items-center justify-between gap-3 mb-6">
@@ -248,7 +265,6 @@ export default function DashboardPage() {
                   )}
                   <h1 className="text-2xl font-bold text-gray-900">My Notes</h1>
                 </div>
-                <p className="text-sm text-gray-500">{notes.length} notes</p>
               </div>
               <button
                 onClick={openCreateNote}
@@ -259,75 +275,104 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {notes.map((note) => (
-                <div
-                  key={note.id}
-                  onClick={() => handleNoteClick(note)}
-                  className="relative bg-white rounded-xl border border-gray-200 p-5 cursor-pointer transition-all hover:border-[#CD5C5C] hover:bg-[#CD5C5C]/5"
-                >
-                  <div className="flex items-center justify-between mb-3 text-xs text-gray-400">
-                    <span>{formatDate(note.created_at)}</span>
-                  </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleDeleteNote(note.id); }}
-                    className="absolute top-3 right-3 p-1.5 rounded-md text-red-600 hover:bg-red-50"
-                    aria-label="Delete note"
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {notes.map((note) => {
+                const hasImages = note.images?.length > 0;
+                return (
+                  <div
+                    key={note.id}
+                    onClick={() => handleNoteClick(note)}
+                    className={`relative bg-white rounded-lg border border-gray-200 cursor-pointer transition-all hover:shadow-lg hover:border-[#CD5C5C] group ${
+                      hasImages ? 'overflow-hidden p-0' : 'p-3 hover:bg-[#CD5C5C]/5'
+                    }`}
                   >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                  {note.images?.length > 0 && (
-                    <div className="mb-3 grid grid-cols-3 gap-1">
-                      {note.images.slice(0, 3).map((img: any, idx: number) => (
-                        <div key={img.id || idx} className="relative aspect-video rounded-lg overflow-hidden bg-gray-100">
-                          <img src={img.url} alt={img.name || `image-${idx}`} className="w-full h-full object-cover" />
-                          {idx === 2 && note.images.length > 3 && (
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-xs font-semibold">
-                              +{note.images.length - 3}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDeleteNote(note.id); }}
+                      className={`absolute ${hasImages ? 'top-2 right-2' : 'top-2 right-2'} p-1 rounded-md text-red-600 bg-white/90 backdrop-blur-sm hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity z-10`}
+                      aria-label="Delete note"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                    
+                    {hasImages ? (
+                      // Pinterest-style card with image
+                      <>
+                        <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
+                          <img 
+                            src={note.images[0].url} 
+                            alt={note.images[0].name || note.title} 
+                            className="w-full h-full object-cover"
+                          />
+                          {note.images.length > 1 && (
+                            <div className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 bg-black/60 backdrop-blur-sm text-white text-[10px] rounded-full">
+                              +{note.images.length - 1}
                             </div>
                           )}
                         </div>
-                      ))}
-                    </div>
-                  )}
-                  <h3 className="text-base font-bold text-gray-900 mb-2">{note.title}</h3>
-                  <p className="text-sm text-gray-500 mb-3 line-clamp-3">{note.content}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {note.tags.map((tag: string, idx: number) => (
-                      <span key={idx} className="px-2 py-1 bg-[#134686]/10 text-[#134686] text-xs rounded-md">
-                        {tag}
-                      </span>
-                    ))}
+                        <div className="p-2.5">
+                          <h3 className="text-sm font-bold text-gray-900 mb-1.5 line-clamp-2">{note.title}</h3>
+                          <p className="text-xs text-gray-500 mb-2 line-clamp-2">{note.content}</p>
+                          <div className="flex items-center justify-between gap-1">
+                            <div className="flex flex-wrap gap-1">
+                              {note.tags.slice(0, 1).map((tag: string, idx: number) => (
+                                <span key={idx} className="px-1.5 py-0.5 bg-[#134686]/10 text-[#134686] text-[10px] rounded">
+                                  {tag}
+                                </span>
+                              ))}
+                              {note.tags.length > 1 && (
+                                <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded">
+                                  +{note.tags.length - 1}
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[10px] text-gray-400">{formatDate(note.created_at)}</span>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      // Text-only card
+                      <>
+                        <div className="flex items-center justify-between mb-2 text-[10px] text-gray-400">
+                          <span>{formatDate(note.created_at)}</span>
+                        </div>
+                        <h3 className="text-sm font-bold text-gray-900 mb-1.5">{note.title}</h3>
+                        <p className="text-xs text-gray-500 mb-2 line-clamp-3">{note.content}</p>
+                        <div className="flex flex-wrap gap-1">
+                          {note.tags.slice(0, 2).map((tag: string, idx: number) => (
+                            <span key={idx} className="px-1.5 py-0.5 bg-[#134686]/10 text-[#134686] text-[10px] rounded">
+                              {tag}
+                            </span>
+                          ))}
+                          {note.tags.length > 2 && (
+                            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded">
+                              +{note.tags.length - 2}
+                            </span>
+                          )}
+                        </div>
+                      </>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ) : (
-          // Detail/Create mode: show two-pane with sliding list
           <div className="flex-1 flex overflow-hidden min-w-0">
-            {/* Sliding My Notes list (width-based animation to avoid overlap) */}
-            <div
-              className={`
-                h-full shrink-0 bg-white ${isListVisible ? 'border-r border-gray-200' : ''}
-                transition-[width,opacity] duration-300 ease-in-out overflow-hidden
-                ${isListVisible ? 'w-[300px] opacity-100' : 'w-0 opacity-0'}
-              `}
-            >
-              <div className={`flex items-center justify-between px-4 py-3 border-b border-gray-200 transition-all duration-300 ${
-                isListEntering ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
+            {isDetailOpen && (
+              <div
+                className={`
+                  h-full shrink-0 bg-white ${isListVisible ? 'border-r border-gray-200' : ''}
+                  transition-[width,opacity] duration-500 ease-in-out overflow-hidden
+                  ${isListVisible ? 'w-[300px] opacity-100' : 'w-0 opacity-0'}
+                `}
+              >
+              <div className={`flex items-center justify-between px-4 py-3 border-b border-gray-200 transition-all duration-500 ${
+                isListEntering ? 'opacity-0 -translate-y-8' : 'opacity-100 translate-y-0'
               }`}>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-800">My Notes</h3>
                   <p className="text-xs text-gray-500">{notes.length} notes</p>
                 </div>
-                <button
-                  onClick={() => setIsListVisible(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg"
-                  aria-label="Hide notes list"
-                >
-                  <ChevronLeft className="w-4 h-4 text-gray-600" />
-                </button>
               </div>
               <div className="p-2 overflow-y-auto h-[calc(100%-56px)]">
                 <div className="space-y-2">
@@ -340,11 +385,11 @@ export default function DashboardPage() {
                           handleNoteClick(note);
                           if (window.innerWidth < 768) setIsListVisible(false);
                         }}
-                        className={`w-full text-left px-3 py-2 rounded-lg border transition-all duration-300 ${
+                        className={`w-full text-left px-3 py-2 rounded-lg border transition-all duration-500 ${
                           isActive
                             ? 'border-[#CD5C5C] bg-[#CD5C5C]/5'
                             : 'border-gray-200 hover:bg-gray-50'
-                        } ${isListEntering ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}
+                        } ${isListEntering ? 'opacity-0 -translate-y-8' : 'opacity-100 translate-y-0'}`}
                         style={{ transitionDelay: `${Math.min(idx, 10) * 30}ms` }}
                       >
                         <div className="flex items-center justify-between text-xs text-gray-400">
@@ -365,95 +410,128 @@ export default function DashboardPage() {
                   })}
                 </div>
               </div>
-            </div>
-
-            {/* Right content area */}
+              </div>
+            )}
             <div
-              className={`flex-1 bg-white overflow-y-auto p-6 md:p-8 transition-all duration-300 min-w-0 ${
-                isPaneEntering ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
+              className={`flex-1 bg-white overflow-y-auto p-6 md:p-8 transition-all duration-500 min-w-0 ${
+                isPaneEntering ? 'opacity-0 -translate-y-8' : 'opacity-100 translate-y-0'
               }`}
             >
               {isCreateNoteOpen ? (
-                <div>
-                  <div className="flex justify-between mb-4">
-                    <h2 className="text-xl font-bold text-gray-800">Create Note</h2>
-                    <button onClick={closeCreateNote}>
+                <div className="max-w-4xl mx-auto">
+                  <div className="flex items-center justify-end mb-8">
+                    <button onClick={closeCreateNote} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                       <X className="w-5 h-5 text-gray-600" />
                     </button>
                   </div>
-
                   <input
                     type="text"
-                    placeholder="Note title"
+                    placeholder="Untitled"
                     value={newNoteTitle}
                     onChange={(e) => setNewNoteTitle(e.target.value)}
-                    className="w-full text-xl font-semibold border-none outline-none mb-3"
+                    className="w-full text-4xl font-bold border-none outline-none mb-6 placeholder-gray-300"
                   />
+
+                  {/* Metadata Section */}
+                  <div className="mb-6 pb-6 border-b border-gray-200">
+                    {/* Last Modified */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="text-sm text-gray-500">Last Modified</span>
+                      <span className="text-sm text-gray-700">{new Date().toLocaleString('en-US', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+
+                    {/* Tags - Inline */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm text-gray-500">Tags</span>
+                      {newNoteTags.map((tag, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => handleRemoveTag(tag)}
+                          className="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs rounded-md transition-colors"
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                      <input
+                        type="text"
+                        placeholder="Add new tag"
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
+                        className="px-3 py-1 text-xs border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#CD5C5C]/40 min-w-[120px]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Formatting Toolbar */}
+                  <div className="mb-6 pb-4 border-b border-gray-200">
+                    <div className="flex items-center justify-between gap-1 text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <select className="px-2 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">
+                          <option>Encode Sans</option>
+                        </select>
+                        <select className="px-2 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 ml-2">
+                          <option>16</option>
+                        </select>
+                        <div className="w-px h-6 bg-gray-300 mx-2"></div>
+                        <button className="p-1.5 hover:bg-gray-100 rounded" title="Bold">
+                          <span className="font-bold text-sm">B</span>
+                        </button>
+                        <button className="p-1.5 hover:bg-gray-100 rounded" title="Italic">
+                          <span className="italic text-sm">I</span>
+                        </button>
+                        <button className="p-1.5 hover:bg-gray-100 rounded" title="Underline">
+                          <span className="underline text-sm">U</span>
+                        </button>
+                        <div className="w-px h-6 bg-gray-300 mx-2"></div>
+                        <label className="p-1.5 hover:bg-gray-100 rounded cursor-pointer" title="Upload Image">
+                          <Upload className="w-4 h-4" />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleImageUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+                      <button
+                        onClick={handleSaveNewNote}
+                        className="flex items-center gap-2 px-3 py-1.5 bg-[#CD5C5C] hover:bg-[#CD5C5C]/90 text-white text-sm rounded transition-all"
+                        title="Save Note"
+                      >
+                        <Save className="w-4 h-4" />
+                        Save
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Content Area */}
                   <textarea
-                    placeholder="Start writing..."
+                    placeholder="Start writing your note..."
                     value={newNoteContent}
                     onChange={(e) => setNewNoteContent(e.target.value)}
-                    className="w-full min-h-[200px] border-none outline-none text-sm text-gray-700 mb-4"
+                    className="w-full min-h-[400px] border-none outline-none text-base text-gray-700 leading-relaxed resize-none"
                   />
 
-                  <div className="flex items-center gap-2 mb-4">
-                    {newNoteTags.map((tag, idx) => (
-                      <span key={idx} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                        {tag}
-                        <button onClick={() => handleRemoveTag(tag)} className="ml-1 text-gray-500 hover:text-gray-700">×</button>
-                      </span>
-                    ))}
-                    <input
-                      type="text"
-                      placeholder="Add tag"
-                      value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
-                      className="px-2 py-1 text-xs border rounded"
-                    />
-                  </div>
-
-                  {/* Images Upload */}
-                  <div className="mb-4">
-                    <label className="block text-xs font-medium text-gray-700 mb-2">Images</label>
-                    <label className="inline-flex items-center gap-2 px-3 py-2 bg-[#134686]/10 hover:bg-[#134686]/20 text-[#134686] text-xs rounded-lg cursor-pointer transition-all">
-                      <Upload className="w-4 h-4" />
-                      Upload Images
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleImageUpload}
-                        className="hidden"
-                      />
-                    </label>
-                    {images.length > 0 && (
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-3">
-                        {images.map((image) => (
-                          <div key={image.id} className="relative group">
-                            <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                              <img src={image.url} alt={image.name} className="w-full h-full object-cover" />
-                            </div>
-                            <button
-                              onClick={() => handleRemoveImage(image.id)}
-                              className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                            <p className="text-xs text-gray-500 mt-1 truncate">{image.name}</p>
+                  {/* Images Grid */}
+                  {images.length > 0 && (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                      {images.map((image) => (
+                        <div key={image.id} className="relative group">
+                          <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                            <img src={image.url} alt={image.name} className="w-full h-full object-cover" />
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={handleSaveNewNote}
-                    className="px-4 py-2 bg-[#CD5C5C] text-white text-sm rounded-lg hover:bg-[#CD5C5C]/80"
-                  >
-                    <Save className="w-4 h-4 inline-block mr-1" />
-                    Save Note
-                  </button>
+                          <button
+                            onClick={() => handleRemoveImage(image.id)}
+                            className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : (
                 selectedNote && (

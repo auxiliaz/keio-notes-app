@@ -12,7 +12,6 @@ export default function CreateNotePage() {
   const [folder, setFolder] = useState('My Notes');
   const [images, setImages] = useState<Array<{ id: string; url: string; name: string }>>([]);
 
-  // === Handle Tag ===
   const handleAddTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
       setTags([...tags, tagInput.trim()]);
@@ -24,7 +23,6 @@ export default function CreateNotePage() {
     setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
-  // === Handle Image Upload ===
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
@@ -60,13 +58,12 @@ export default function CreateNotePage() {
       updatedAt: new Date().toISOString(),
     };
 
-    // ambil notes lama dari localStorage
+
     const existingNotes = JSON.parse(localStorage.getItem('notes') || '[]');
     const updatedNotes = [...existingNotes, newNote];
     localStorage.setItem('notes', JSON.stringify(updatedNotes));
 
     alert('✅ Note saved successfully!');
-    // Reset form
     setTitle('');
     setContent('');
     setTags([]);
@@ -115,10 +112,8 @@ export default function CreateNotePage() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-          {/* Title */}
           <input
             type="text"
             placeholder="Note Title"
@@ -127,7 +122,6 @@ export default function CreateNotePage() {
             className="w-full text-3xl font-bold text-gray-900 placeholder-gray-300 border-none outline-none mb-6"
           />
 
-          {/* Tags */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">Tags</label>
             <div className="flex flex-wrap gap-2 mb-3">
@@ -165,10 +159,8 @@ export default function CreateNotePage() {
             </div>
           </div>
 
-          {/* Divider */}
           <div className="border-t border-gray-200 mb-6"></div>
 
-          {/* Content */}
           <textarea
             placeholder="Start writing your note..."
             value={content}
@@ -176,7 +168,6 @@ export default function CreateNotePage() {
             className="w-full min-h-[300px] text-gray-700 leading-relaxed border-none outline-none resize-none text-base mb-6"
           />
 
-          {/* Images */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">Images</label>
             <label className="inline-flex items-center gap-2 px-4 py-2 bg-[#134686]/10 hover:bg-[#134686]/20 text-[#134686] text-sm rounded-lg cursor-pointer transition-all">
@@ -214,17 +205,6 @@ export default function CreateNotePage() {
               </div>
             )}
           </div>
-        </div>
-
-        {/* Tips */}
-        <div className="mt-6 bg-[#134686]/5 border border-[#134686]/20 rounded-xl p-4">
-          <h3 className="text-sm font-semibold text-[#134686] mb-2">💡 Writing Tips</h3>
-          <ul className="text-xs text-gray-600 space-y-1">
-            <li>• Use tags to organize and find your notes easily</li>
-            <li>• Upload multiple images to enrich your notes with visuals</li>
-            <li>• Press Ctrl+B for bold, Ctrl+I for italic, Ctrl+U for underline</li>
-            <li>• Auto-save is enabled — your work is safe!</li>
-          </ul>
         </div>
       </div>
     </div>

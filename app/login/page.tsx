@@ -143,7 +143,7 @@ export default function LoginPage() {
 
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#CD5C5C] shadow-md">
-                <NotebookPen className="w-6 h-6 text-white" strokeWidth={2.5} />
+                <span className="text-2xl font-bold text-white">𔓘</span>
               </div>
               <span className="text-2xl font-bold text-white/90 tracking-wide">
                 Keio
