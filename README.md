@@ -1,124 +1,120 @@
-# Keio Notes App
+# Keio Notes – Aplikasi Catatan Berbasis Web
 
-Keio Notes is a simple and aesthetic web-based notes application built with **Next.js**.  
-This project focuses on providing a clean user experience for writing notes and managing daily to-do activities, using **localStorage** as the main data storage without a backend.
-
----
+Keio Notes adalah aplikasi catatan berbasis web yang dibangun menggunakan **Next.js (App Router)**.  
+Aplikasi ini berfokus pada pengalaman pengguna yang sederhana dan estetis untuk menulis catatan serta mengelola aktivitas to-do harian. Seluruh data disimpan menggunakan **localStorage** tanpa backend atau database.
 
 ## Tech Stack
 
-- **Next.js 15** (App Router)
-- **React 19**
-- **TypeScript**
-- **Tailwind CSS v4**
-- **Lucide React** (icons)
-- **LocalStorage** (client-side data persistence)
+- Framework: Next.js (App Router)
+- Library: React
+- Bahasa: TypeScript
+- Styling: Tailwind CSS
+- Icons: Lucide React
+- Storage: Web Storage API (localStorage)
 
----
+## Menjalankan proyek
 
-## Application Pages & Features
+Pastikan **Node.js** sudah terpasang di perangkat.
 
-### 1. Landing Page
-- Introduction to Keio Notes
-- Simple and minimal design
-- Entry point before authentication
-
----
-
-### 2. Authentication (Login & Register)
-- User registration and login using **localStorage**
-- No backend or server-side authentication
-- Used only to simulate authentication flow
-
----
-
-### 3. Notes Page
-Users can manage personal notes with the following features:
-- Create a new note
-- View a list of notes
-- View note details
-- Edit note title and content
-- Add and remove tags
-- Upload images (stored as data in localStorage)
-- Delete notes
-
-All notes data is stored locally in the browser using **localStorage**.
-
----
-
-### 4. Note Detail Page
-- Display full note content
-- Edit mode for updating title, content, and tags
-- Delete note functionality
-- Data updates are synced directly to localStorage
-
----
-
-### 5. To-Do Page
-- Displays a predefined activity (static from code)
-- Inside the activity, users can:
-  - Add new to-do items
-  - Delete to-do items
-  - Mark items as done (checked)
-
-> Note: Users cannot create new activities yet, only manage to-do items within the existing activity.
-
----
-
-### 6. Logout
-- Clears authentication data from localStorage
-- Redirects user back to the register page
-
----
-
-## Application Flow
-
-1. User opens the landing page
-2. User registers or logs in
-3. After login, user is redirected to the dashboard
-4. User can:
-   - Manage notes (create, read, update, delete)
-   - Access note detail pages
-   - Manage to-do items
-5. User logs out and returns to the landing page
-
----
-
-## Data Management
-
-- All data (users, notes, tags, to-do items) is stored using **localStorage**
-- No backend or database integration
-- Data persists as long as the browser storage is not cleared
-
----
-
-## Limitations
-
-- No backend or server-side database
-- Authentication is client-side only (not secure for production)
-- To-do activities are still static and defined in code
-- Data is device- and browser-specific (localStorage based)
-
----
-
-## Installation & Running the Project
-
-Clone the repository:
+1. **Clone repository**
 ```bash
 git clone https://github.com/your-username/keio-notes-app.git
+cd keio-notes-app 
 ```
-
-Install the dependencies:
+2. **Install dependencies**
 ```bash
 npm install
 ```
-
-Run the development server:
+3. **Jalankan development server**
 ```bash
 npm run dev
 ```
-
-Open the app in your browser:
-```
+2. **Akses aplikasi**
+```bash
 http://localhost:3000
 ```
+
+## Fitur utama
+
+- Landing page sebagai halaman awal aplikasi.
+- Sistem autentikasi (login & register) berbasis localStorage.
+- Manajemen catatan (create, read, update, delete).
+- Detail catatan dengan mode edit.
+- Tag pada catatan untuk pengelompokan.
+- Upload gambar ke dalam catatan (disimpan di localStorage).
+- Halaman to-do untuk mengelola daftar tugas.
+- Logout untuk menghapus data autentikasi.
+- Desain minimalis dan responsif.
+
+## Alur kerja aplikasi
+
+1. **Landing Page**
+   - Pengguna pertama kali masuk ke landing page.
+   - Halaman ini berfungsi sebagai pengantar sebelum autentikasi.
+
+2. **Autentikasi Pengguna**
+   - Pengguna dapat melakukan register dan login.
+   - Data akun disimpan di localStorage.
+   - Autentikasi bersifat simulasi (client-side only), tanpa backend.
+
+3. **Dashboard / Notes Page**
+   - Setelah login, pengguna diarahkan ke halaman catatan.
+   - Pengguna dapat:
+     > Membuat catatan baru
+     > Melihat daftar catatan
+     > Mengedit judul dan isi catatan
+     > Menambahkan dan menghapus tag
+     > Mengunggah gambar
+     > Menghapus catatan
+   - Semua perubahan langsung disinkronkan ke localStorage.
+
+4. **Note Detail Page**
+   - Menampilkan isi catatan secara lengkap.
+   - Mode edit tersedia untuk memperbarui data catatan.
+   - Penghapusan catatan dilakukan dari halaman ini.
+   - Data diperbarui langsung ke localStorage.
+
+5. **To-Do Page**
+   - Menampilkan satu aktivitas yang didefinisikan secara statis di dalam kode.
+   - Di dalam aktivitas tersebut, pengguna dapat:
+     > Menambahkan item to-do
+     > Menandai to-do sebagai selesai
+     > Menghapus item to-do
+   - Data to-do juga disimpan di localStorage.
+
+6. **Logout**
+   - Menghapus data autentikasi dari localStorage.
+   - Pengguna diarahkan kembali ke halaman register / landing page.
+
+## Manajemen Data
+
+- Seluruh data (user, notes, tags, images, to-do items) disimpan menggunakan localStorage.
+- Tidak menggunakan backend maupun database.
+- Data hanya tersedia pada browser dan perangkat yang sama.
+
+## Struktur penting
+
+- `app/` – Menggunakan App Router Next.js.
+- `app/(auth)/` – Halaman login dan register.
+- `app/notes/` – Halaman daftar catatan.
+- `app/notes/[id]/` – Halaman detail catatan.
+- `app/todo/` – Halaman manajemen to-do.
+- `components/` – Komponen UI reusable.
+- `lib/` – Helper dan utilitas localStorage.
+
+## Keterbatasan Aplikasi
+
+- Tidak menggunakan backend atau database.
+- Autentikasi hanya simulasi dan tidak aman untuk produksi.
+- Aktivitas to-do masih statis dan didefinisikan di dalam kode.
+- Data bergantung pada browser (akan hilang jika localStorage dibersihkan).
+
+## Pengembangan lanjutan
+
+Beberapa pengembangan yang dapat dilakukan ke depannya:
+
+1. Menambahkan backend dan database.
+2. Autentikasi server-side.
+3. Multi-activity untuk to-do.
+4. Sinkronisasi data antar perangkat.
+5. Fitur pencarian dan filter catatan.
