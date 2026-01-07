@@ -18,7 +18,7 @@ Pastikan **Node.js** sudah terpasang di perangkat.
 
 1. **Clone repository**
 ```bash
-git clone https://github.com/your-username/keio-notes-app.git
+git clone https://github.com/auxiliaz/keio-notes-app.git
 cd keio-notes-app 
 ```
 2. **Install dependencies**
