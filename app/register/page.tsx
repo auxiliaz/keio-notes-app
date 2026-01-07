@@ -19,7 +19,7 @@ export default function RegisterPage() {
     setError('');
     setLoading(true);
 
-    // Simulasi "register" frontend-only
+    
     try {
       const users = JSON.parse(localStorage.getItem('users') || '[]');
       const existing = users.find((u: any) => u.email === formData.email);

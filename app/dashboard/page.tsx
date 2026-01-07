@@ -151,9 +151,8 @@ export default function DashboardPage() {
   };
 
   const folders = [
-    { id: 1, name: 'My Notes', icon: NotebookPen, active: true },
-    { id: 2, name: 'To-do list', icon: CheckSquare, active: false },
-    { id: 3, name: 'Diary', icon: PenLine, active: false },
+    { id: 1, name: 'My Notes', icon: NotebookPen, active: true, path: '/dashboard' },
+    { id: 2, name: 'To-do list', icon: CheckSquare, active: false, path: '/todo' },
   ];
 
   const formatDate = (dateString: string) => {
@@ -185,7 +184,7 @@ export default function DashboardPage() {
               </div>
               {isSidebarOpen && (
                 <div className="flex-1">
-                  <h2 className="text-lg font-bold text-white">Keio Notes</h2>
+                  <h2 className="text-lg font-bold text-white">Keio</h2>
                 </div>
               )}
             </div>
@@ -215,6 +214,7 @@ export default function DashboardPage() {
           {folders.map((folder) => (
             <button
               key={folder.id}
+              onClick={() => folder.path && router.push(folder.path)}
               className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${
                 folder.active
                   ? 'bg-white text-[#CD5C5C] font-semibold shadow-md'

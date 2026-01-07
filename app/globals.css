@@ -27,6 +27,10 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @keyframes fadeInLeft {
   from {
     opacity: 0;

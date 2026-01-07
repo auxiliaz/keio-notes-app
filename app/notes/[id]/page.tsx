@@ -16,7 +16,7 @@ export default function NoteDetailPage() {
   const [tagInput, setTagInput] = useState('');
   const [error, setError] = useState('');
 
-  // 🧠 Ambil data note dari localStorage
+  // Ambil data note dari localStorage
   useEffect(() => {
     const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
     const foundNote = savedNotes.find((n: any) => n.id === Number(noteId));
@@ -29,7 +29,7 @@ export default function NoteDetailPage() {
     }
   }, [noteId]);
 
-  // 🧩 Tambah tag baru
+  // Tambah tag baru
   const handleAddTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
       setTags([...tags, tagInput.trim()]);
@@ -37,12 +37,12 @@ export default function NoteDetailPage() {
     }
   };
 
-  // ❌ Hapus tag
+  // Hapus tag
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
-  // 💾 Simpan perubahan ke localStorage
+  // Simpan perubahan ke localStorage
   const handleSave = () => {
     const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
     const updatedNotes = savedNotes.map((n: any) =>
@@ -52,7 +52,7 @@ export default function NoteDetailPage() {
     setIsEditing(false);
   };
 
-  // 🗑️ Hapus note dari localStorage
+  // Hapus note dari localStorage
   const handleDelete = () => {
     const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
     const updatedNotes = savedNotes.filter((n: any) => n.id !== note.id);
