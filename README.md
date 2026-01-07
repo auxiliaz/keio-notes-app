@@ -60,12 +60,12 @@ http://localhost:3000
 3. **Dashboard / Notes Page**
    - Setelah login, pengguna diarahkan ke halaman catatan.
    - Pengguna dapat:
-     > Membuat catatan baru
-     > Melihat daftar catatan
-     > Mengedit judul dan isi catatan
-     > Menambahkan dan menghapus tag
-     > Mengunggah gambar
-     > Menghapus catatan
+     1. Membuat catatan baru
+     2. Melihat daftar catatan
+     3. Mengedit judul dan isi catatan
+     4. Menambahkan dan menghapus tag
+     5. Mengunggah gambar
+     6. Menghapus catatan
    - Semua perubahan langsung disinkronkan ke localStorage.
 
 4. **Note Detail Page**
@@ -77,9 +77,9 @@ http://localhost:3000
 5. **To-Do Page**
    - Menampilkan satu aktivitas yang didefinisikan secara statis di dalam kode.
    - Di dalam aktivitas tersebut, pengguna dapat:
-     > Menambahkan item to-do
-     > Menandai to-do sebagai selesai
-     > Menghapus item to-do
+     1. Menambahkan item to-do
+     2. Menandai to-do sebagai selesai
+     3. Menghapus item to-do
    - Data to-do juga disimpan di localStorage.
 
 6. **Logout**
